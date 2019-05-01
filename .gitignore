@@ -1,0 +1,4 @@
+node_modules/
+test/coverage
+/docs
+index.html
