@@ -1,4 +1,4 @@
-# Node For Speed
+# [Node For Speed](https://nodeforspeed.github.io/)
 > Easy API endpoint management
 
 Getting started
@@ -33,7 +33,7 @@ const { NodeForSpeed } = require('node-for-speed')
 await NodeForSpeed.load(server, config)
 ```
 
-Where `config` is an optional and will be merged with your main configuration for the given execution.
+Where `config` is optional and will be merged with your main configuration for the given execution.
 
 
 # Configuration
@@ -112,13 +112,11 @@ As an Object or a class, `before(server, options)` is called prior loading any r
 
 ```javascript
 // Given
-config(defaults)
-// ...
-await nfs(server, config)
-
-// We have
-
-const options = Object.assign({}, defaults, config)
+NodeForSpeed.config(defaults)
+// And
+await NodeForSpeed.load(server, config)
+// Then
+options = Object.assign({}, defaults, config)
 ```
 
 #### route (String)
@@ -198,7 +196,7 @@ module.exports = {
 // => GET api/v1/brand/new
 ```
 
-An endpoint route can be set "statically" as follow:
+An endpoint url can be set manually as follow:
 ```javascript
 // ./api/v1/nested/route/with/a/twist/get.js
 
