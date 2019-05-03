@@ -1,4 +1,4 @@
 node_modules/
-test/coverage
+/test/coverage
 /docs
-index.html
+/index.html
