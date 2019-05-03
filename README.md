@@ -13,10 +13,15 @@ const server = express()
 
 await nfs(server)
 
-// ./api/v1/route/get.js => GET api/v1/route
-// ./api/v1/route/post.js => POST api/v1/route
-
-// ...
+/*
+api/
+├── v1/
+│   ├── route/
+│   │   ├── get.js  => GET api/v1/route
+│   │   └── post.js => POST api/v1/route
+│   └── ...
+└── ...
+ */
 ```
 
 # Usage
@@ -33,7 +38,7 @@ const { NodeForSpeed } = require('node-for-speed')
 await NodeForSpeed.load(server, config)
 ```
 
-Where `config` is optional and will be merged with your main configuration for the given execution.
+Where `config` is optional and will be "assigned" to your main configuration for the given execution.
 
 
 # Configuration
@@ -58,7 +63,7 @@ config({
 
 ```
 
-All paths passed to the config is relative to your project working directory.
+All paths passed to the config are relative to your project working directory.
 
 #### loader (String)
 
@@ -70,14 +75,14 @@ More built-in loaders to come (e.g. koa, hapi, ...)
 
 Paths to directories containing your endpoints as a String, an Object with a path property or an Array containing any of the two. <br />
 <br />
-Each path object will be passed as a param of the Route class when loading their endpoints.
+Each path will be passed as an object param to the Route class when loading an endpoint.
 <br />
 <br />
 A prefix property can be used to prepend each endpoint path.
 
 #### adapter (String)
 
-Path to a custom function, Object or class. An adapter defines how a Route object is mounted on the server (can be used in place of custom loader).
+Path to a custom function, Object or class. An adapter defines how a Route object is mounted on your server.
 
 ```javascript
 module.exports = (server, route) => { /* ... */ }
@@ -125,11 +130,11 @@ Path to a custom Route class
 
 ### .node-for-speed file
 
-If provided as JSON, the .node-for-speed file will be loaded automatically as node-for-speed module is required. 
+If provided as JSON, the .node-for-speed file will be loaded automatically as node-for-speed module is called. 
 
 ### package.json
 
-If provided, the node-for-speed property of the package.json file will be automatically loaded as node-for-speed module is required. The .node-for-speed file has a higher priority.
+If provided, the node-for-speed property of the package.json file will be automatically loaded as node-for-speed module is called. The .node-for-speed file has a higher priority.
 
 ### as module
 
