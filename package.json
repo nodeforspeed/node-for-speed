@@ -36,7 +36,8 @@
     "method",
     "rest",
     "http",
-    "https"
+    "https",
+    "service"
   ],
   "scripts": {
     "lint": "eslint . --fix --ignore-pattern /test/coverage/ --ignore-pattern /docs",
