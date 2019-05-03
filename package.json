@@ -35,9 +35,13 @@
     "quick",
     "method",
     "rest",
+    "restful",
     "http",
     "https",
-    "service"
+    "service",
+    "services",
+    "web service",
+    "web services"
   ],
   "scripts": {
     "lint": "eslint . --fix --ignore-pattern /test/coverage/ --ignore-pattern /docs",
