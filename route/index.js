@@ -44,6 +44,11 @@ class Route {
 
       this.handler = handler
     }
+    else if (typeof endpoint === 'string') {
+      path = parentPath
+        ? `${ parentPath }/${ endpoint }`
+        : endpoint
+    }
     else if (endpoint && 'url' in endpoint) {
       path = endpoint.url
     }
