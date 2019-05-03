@@ -11,8 +11,7 @@ const Adapter = require('../adapter')
 const Route = require('../route')
 const methods = require('../lib/methods')
 const exists = require('../lib/exists')
-
-const AsyncFunction = (async function () {}).constructor
+const awaits = require('../lib/awaits')
 
 const $collect = Symbol('collect')
 const $getLoader = Symbol('getLoader')
@@ -40,12 +39,11 @@ class NodeForSpeed {
       this[ $getRouteClass ](route)
     ])
 
-    if (adapter) {
-      if (adapter.before instanceof AsyncFunction) {
-        await adapter.before(server, options)
-      }
-      else if (adapter.before instanceof Function) {
-        adapter.before(server, options)
+    if (adapter && adapter.before instanceof Function) {
+      const before = adapter.before(server, options)
+
+      if (awaits(before)) {
+        await before
       }
     }
 
@@ -89,12 +87,11 @@ class NodeForSpeed {
 
     loaded.forEach(items => routes.push(...items))
 
-    if (adapter) {
-      if (adapter.after instanceof AsyncFunction) {
-        await adapter.after(server, options)
-      }
-      else if (adapter.after instanceof Function) {
-        adapter.after(server, options)
+    if (adapter && adapter.after instanceof Function) {
+      const after = adapter.after(server, options)
+
+      if (awaits(after)) {
+        await after
       }
     }
 
