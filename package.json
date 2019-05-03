@@ -15,6 +15,7 @@
     "type": "git",
     "url": "https://github.com/nodeforspeed/node-for-speed.git"
   },
+  "homepage": "www.nodeforspeed.com",
   "main": "index.js",
   "keywords": [
     "api",
