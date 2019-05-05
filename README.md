@@ -148,6 +148,10 @@ Folder names can be overridden using an index.js file (useful for url params):
 ```javascript
 // ./api/v1/anything/index.js
 
+module.exports = 'something'
+
+// OR
+
 module.exports = {
   path: 'something'
 }
