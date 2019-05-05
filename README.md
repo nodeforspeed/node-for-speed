@@ -38,7 +38,7 @@ const { NodeForSpeed } = require('node-for-speed')
 await NodeForSpeed.load(server, config)
 ```
 
-Where `config` is optional and will be "assigned" to your main configuration for the given execution.
+Where `config` is an optional parameter to be "assigned" to your main configuration for the given execution.
 
 
 # Configuration
@@ -46,10 +46,9 @@ Where `config` is optional and will be "assigned" to your main configuration for
 ### programmatic
 
 ```javascript
-const { config } = nfs
-
-config({
+NodeForSpeed.config({
   loader: 'express', // optional
+  router: 'express', // optional
   paths: [
     'path/to/routes',
     {
@@ -60,81 +59,52 @@ config({
   adapter: 'path/to/adapter', // optional
   route: 'path/to/route' // optional
 })
-
 ```
 
 All paths passed to the config are relative to your project working directory.
 
-#### loader (String)
+#### `loader` (String)
 
-Optional param that defines the server type (default: express). <br/>
-Can be used as path to your own loader module. <br/>
-More built-in loaders to come (e.g. koa, hapi, ...)
-
-#### paths (String | Object | Array)
-
-Paths to directories containing your endpoints as a String, an Object with a path property or an Array containing any of the two. <br />
-<br />
-Each path will be passed as an object param to the Route class when loading an endpoint.
+Built in server loader, path to your loader or loader module name.
 <br />
 <br />
-A prefix property can be used to prepend each endpoint path.
+Available loaders: `express`
 
-#### adapter (String)
+#### `router` (String)
 
-Path to a custom function, Object or class. An adapter defines how a Route object is mounted on your server.
+Built in router, path to your router or router module name. See [Router](#customization-router) for more details.
+<br />
+<br />
+Available routers: `express` <br />
+
+#### `paths` (String | Object | Array)
+
+Paths to directories containing your endpoints as a String, a branch object (cf. example) or an Array containing any of the two. <br />
+Every String will be converted into branch.
 
 ```javascript
-module.exports = (server, route) => { /* ... */ }
-
-// OR
-
-module.exports = {
-  before: (server, options) => { // optional
-    /* ... */
-  },
-  handler: (server, route) => {
-    /* ... */
-  },
-  after: (server, options) => { // optional
-    /* ... */
-  }
-}
-
-// OR
-
-module.exports = class CustomAdapter extends Adapter {
-  before (server, options) { /* ... */ }
-
-  handler (server, route) { /* ... */ }
-
-  after (server, options) { /* ... */ }
+// branch
+{
+  path: 'path/to/your/routes',
+  prefix: 'v1', // optional
 }
 ```
 
-As an Object or a class, `before(server, options)` is called prior loading any route (if defined) while `after(server, options)` is called post loading.
-<br />
+#### `adapter` (String)
 
-```javascript
-// Given
-NodeForSpeed.config(defaults)
-// And
-await NodeForSpeed.load(server, config)
-// Then
-options = Object.assign({}, defaults, config)
-```
+Path to a custom function, Object or Adapter class. See [Adapter](#customization-adapter) for more details.
 
 #### route (String)
 
-Path to a custom Route class
+Path to a custom Route class. See [Route](#customization-route) for more details.
 
 ### .node-for-speed file
 
-If provided as JSON, the .node-for-speed file will be loaded automatically as node-for-speed module is called. 
+If provided as JSON, the `.node-for-speed` file will be loaded automatically as the node-for-speed module is called. 
 
 ### package.json
 
-If provided, the node-for-speed property of the package.json file will be automatically loaded as node-for-speed module is called. The .node-for-speed file has a higher priority.
+If provided, the `"node-for-speed"` property of your package.json file will be automatically loaded as the node-for-speed module is called. The `.node-for-speed` file has a higher priority.
 
 ### as module
 
@@ -216,24 +186,13 @@ module.exports = {
 // instead of
 // => GET api/v1/nested/route/with/a/twist
 ```
+# Customization
 
-# Adapter
-```javascript
-class Adapter {
-  before (server, options) {
-    /* ... */
-  }
+## Loader
 
-  handler (server, route) {
-    /* ... */
-  }
+## Router
 
-  after (server, options) {
-    /* ... */
-  }
-}
-```
-# Route
+## Route
 
 ```javascript
 class Route {
@@ -245,24 +204,85 @@ class Route {
     endpoint,
     parent,
     method,
-    settings
+    branch
   }) {
     /* ... */
   }
 }
 ```
 
+## Adapter
+
+An adapter customizes the way a route is mounted on your server. It is defined as:
+
+```javascript
+class Adapter {
+  before (server, options) {
+    /* ... */
+  }
+
+  handler (server, route, router) {
+    /* ... */
+  }
+
+  after (server, options) {
+    /* ... */
+  }
+}
+```
+`before(server, options)` and `after(server, options)` are optional methods called respectively pre and post loading.
+<br />
+<br />
+In this context `options` is defined as:
+```javascript
+// Given
+NodeForSpeed.config(defaults)
+// And
+NodeForSpeed.load(server, config)
+// Then
+options = Object.assign({}, defaults, config)
+```
+
+Given the optional nature of `before` and `after`, adapters can be expressed under any of the following forms:
+
+```javascript
+module.exports = (server, route, router) => { /* ... */ }
+```
+```javascript
+module.exports = {
+  before: (server, options) => { // optional
+    /* ... */
+  },
+  handler: (server, route, router) => {
+    /* ... */
+  },
+  after: (server, options) => { // optional
+    /* ... */
+  }
+}
+```
+```javascript
+module.exports = class CustomAdapter extends Adapter {
+  /* ... */
+}
+```
+
+## Example
+
+
+
 Roadmap
 =======
 
 In progress
 -----------
-- implement Router (per defined path)
-- Adapter and Route documentation
+- Route documentation
+- Customization example
 - swagger generated API documentation
 
 Planned
 -------
+- Built-in loaders: koa, hapi
 - rest file
 
 ```javascript
