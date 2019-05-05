@@ -62,21 +62,21 @@ class NodeForSpeed {
     const loading = entries.map(entry => {
       let src
       let prefix
-      let settings
+      let branch
       let router
 
       if (!(entry instanceof Object)) {
         src = entry
         prefix = ''
-        settings = { path: entry }
+        branch = { path: entry }
       }
       else {
         ({ path: src, prefix = '' } = entry)
-        settings = entry
+        branch = entry
       }
 
       if (Router) {
-        router = new Router(server, settings)
+        router = new Router(server, branch)
       }
 
       const path = Path.join(main, src)
@@ -90,7 +90,7 @@ class NodeForSpeed {
         router,
         endpoints,
         Route,
-        settings
+        branch
       })
     })
 
@@ -208,12 +208,12 @@ class NodeForSpeed {
     endpoints,
     parent,
     Route,
-    settings
+    branch
   }) {
     const items = await readdir(path)
 
     const routes = []
-    const matchers = Object.assign({}, endpoints, settings.endpoints)
+    const matchers = Object.assign({}, endpoints, branch.endpoints)
     const keys = Object.keys(matchers)
 
     const indexFilePath = Path.join(path, 'index.js')
@@ -264,7 +264,7 @@ class NodeForSpeed {
           path: currentPath,
           parent: root,
           Route,
-          settings
+          branch
         })
       }
 
@@ -279,7 +279,7 @@ class NodeForSpeed {
 
           if (!methods.includes(method)) return
 
-          const conf = settings && settings.endpoints && settings.endpoints[ key ] ||  endpoints[ key ]
+          const conf = branch && branch.endpoints && branch.endpoints[ key ] ||  endpoints[ key ]
           let match
 
           if (typeof conf === 'string') {
@@ -309,7 +309,7 @@ class NodeForSpeed {
             endpoint,
             parent: root,
             method,
-            settings
+            branch
           })
 
           matched = true
@@ -331,7 +331,7 @@ class NodeForSpeed {
           endpoint,
           parent: root,
           method,
-          settings
+          branch
         })
 
         routes.push(route)
