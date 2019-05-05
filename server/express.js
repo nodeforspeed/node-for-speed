@@ -1,12 +1,12 @@
 module.exports = (server, route, adapter) => {
-  if (!adapter) {
-    const { prefix, path, method, handler } = route
-    server[ method ](`${ prefix }/${ path }`, handler)
-  }
-  else if (adapter instanceof Function) {
+  if (adapter instanceof Function) {
     adapter(server, route)
   }
-  else {
+  else if (adapter && adapter.handler instanceof Function) {
     adapter.handler(server, route)
+  }
+  else {
+    const { prefix, path, method, handler } = route
+    server[ method ](`${ prefix }/${ path }`, handler)
   }
 }
