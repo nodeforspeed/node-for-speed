@@ -1,6 +1,7 @@
 const nfs = require('../index.js')
 const express = require('express')
 const Path = require('path')
+const Router = require('./router')
 const { NodeForSpeed, config } = nfs
 
 const empty = {}
@@ -49,7 +50,6 @@ describe('nfs.config({...})', () => {
 })
 
 describe('nfs(server)', () => {
-
   describe('first', () => {
     it('loads individual files named as methods as endpoints', async () => {
       const app = express()
@@ -72,6 +72,20 @@ describe('nfs(server)', () => {
 
       const routes = await nfs(app)
       expect(routes).toHaveLength(4)
+    })
+
+    it('loads endpoints in a router per branch', async () => {
+      const app = express()
+      config({
+        paths: [
+          './test/routes/1',
+          './test/routes/2'
+        ],
+        router: './test/router'
+      })
+
+      await nfs(app)
+      expect(Router.spy).toHaveBeenCalledTimes(2)
     })
 
     it('loads method endpoints matching configured filename', async () => {

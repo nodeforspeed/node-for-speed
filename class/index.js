@@ -9,6 +9,7 @@ const stat = promisify(fs.stat)
 
 const Adapter = require('../adapter')
 const Route = require('../route')
+const Router = require('../router')
 const methods = require('../lib/methods')
 const exists = require('../lib/exists')
 const awaits = require('../lib/awaits')
@@ -17,9 +18,14 @@ const $collect = Symbol('collect')
 const $getLoader = Symbol('getLoader')
 const $getAdapter = Symbol('getAdapter')
 const $getRouteClass = Symbol('getRouteClass')
+const $getRouterClass = Symbol('getRouterClass')
 
 const loaders = {
   express: '../server/express'
+}
+
+const routers = {
+  express: '../router/express'
 }
 
 class NodeForSpeed {
@@ -30,14 +36,14 @@ class NodeForSpeed {
       endpoints = {},
       loader = 'express',
       paths,
-      route
+      route,
+      router
     } = options
 
     const load = this[ $getLoader ](loader)
-    const [ adapter, Route ] = await Promise.all([
-      this[ $getAdapter ](adaptr),
-      this[ $getRouteClass ](route)
-    ])
+    const Router = this[ $getRouterClass ](router)
+    const adapter = this[ $getAdapter ](adaptr)
+    const Route = this[ $getRouteClass ](route)
 
     if (adapter && adapter.before instanceof Function) {
       const before = adapter.before(server, options)
@@ -57,6 +63,7 @@ class NodeForSpeed {
       let src
       let prefix
       let settings
+      let router
 
       if (!(entry instanceof Object)) {
         src = entry
@@ -68,6 +75,10 @@ class NodeForSpeed {
         settings = entry
       }
 
+      if (Router) {
+        router = new Router(server, settings)
+      }
+
       const path = Path.join(main, src)
 
       return this[ $collect ]({
@@ -76,6 +87,7 @@ class NodeForSpeed {
         path,
         prefix,
         server,
+        router,
         endpoints,
         Route,
         settings
@@ -115,25 +127,23 @@ class NodeForSpeed {
     return fn
   }
 
-  static async [ $getAdapter ] (arg) {
+  static [ $getAdapter ] (arg) {
     let Class
 
     if (typeof arg !== 'string') {
       Class = arg
     }
+    else if (arg[ 0 ] === '.') {
+      Class = require(Path.join(main, arg))
+    }
     else {
-      const path = Path.join(main, arg)
-      const usePath = arg[ 0 ] === '.' || await exists(path)
-
-      Class = usePath
-        ? require(path)
-        : require(arg)
+      Class = require(arg)
     }
 
     if (!Class) return
 
     if (!(Class instanceof Function || Class.handler instanceof Function)) {
-      throw new Error('Node For Speed: adapter must be a function, Adapter class or an object with a handler function')
+      throw new Error('Node For Speed: adapter must be a function, extend node-for-speed/adapter or be an object with a handler function')
     }
 
     if (Class instanceof Function && Class.prototype instanceof Adapter) {
@@ -143,7 +153,7 @@ class NodeForSpeed {
     return Class
   }
 
-  static async [ $getRouteClass ] (route) {
+  static [ $getRouteClass ] (route) {
     if (!route) return Route
 
     let Class
@@ -151,17 +161,37 @@ class NodeForSpeed {
     if (typeof route !== 'string') {
       Class = route
     }
+    else if (route[ 0 ] === '.') {
+      Class = require(Path.join(main, route))
+    }
     else {
-      const routePath = Path.join(main, route)
-      const hasRoute = await exists(routePath)
-
-      Class = hasRoute
-        ? require(routePath)
-        : require(route)
+      Class = require(route)
     }
 
     if (!(Class instanceof Function && Class.prototype instanceof Route)) {
       throw new Error('Node For Speed: custom Route class must extend api-loader/Route')
+    }
+
+    return Class
+  }
+
+  static [ $getRouterClass ] (router) {
+    if (!router) return
+
+    let Class
+
+    if (router in routers) {
+      Class = require(routers[ router ])
+    }
+    else if (router[ 0 ] === '.') {
+      Class = require(Path.join(main, router))
+    }
+    else {
+      Class = require(router)
+    }
+
+    if (!(Class instanceof Function && Class.prototype instanceof Router)) {
+      throw new Error('Node For Speed: router must extend node-for-speed/router')
     }
 
     return Class
@@ -173,6 +203,7 @@ class NodeForSpeed {
     load,
     path,
     server,
+    router,
     prefix,
     endpoints,
     parent,
@@ -284,7 +315,7 @@ class NodeForSpeed {
           matched = true
 
           routes.push(route)
-          return load(server, route, adapter)
+          return load(server, route, adapter, router)
         })
       }
 
@@ -304,7 +335,7 @@ class NodeForSpeed {
         })
 
         routes.push(route)
-        load(server, route, adapter)
+        load(server, route, adapter, router)
       }
 
       return routes
