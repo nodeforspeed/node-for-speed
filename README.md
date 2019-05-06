@@ -37,9 +37,7 @@ const { NodeForSpeed } = require('node-for-speed')
 // ...
 await NodeForSpeed.load(server, config)
 ```
-
 Where `config` is an optional parameter to be "assigned" to your main configuration for the given execution.
-
 
 # Configuration
 
@@ -88,19 +86,19 @@ Every string will be converted into branch.
 // branch
 {
   path: 'path/to/your/routes',
-  prefix: 'v1', // optional
+  prefix: 'v1' // optional
 }
 ```
 
 #### `adapter` (String)
 
-Path to a custom function, Object or Adapter class. See [Adapter](#customization-adapter) for more details.
+Path to a custom function, object or Adapter class. See [Adapter](#customization-adapter) for more details.
 
-#### route (String)
+#### `route` (String)
 
 Path to a custom Route class. See [Route](#customization-route) for more details.
 
-### .node-for-speed file
+### `.node-for-speed` file
 
 If provided as JSON, the `.node-for-speed` file will be loaded automatically as the node-for-speed module is called. 
 
