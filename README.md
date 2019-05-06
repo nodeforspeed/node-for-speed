@@ -198,24 +198,52 @@ module.exports = {
 
 ## Route
 
+The purpose of the route class is to build your endpoints path and allow you to extend them as shown in [example](#customization-example). 
+
 ```javascript
 class Route {
   constructor ({
-    adapter,
-    key,
-    filepath,
-    prefix,
-    endpoint,
-    parent,
-    method,
-    branch
+    adapter,  // optional
+    key,      // current path section
+    filepath, // endpoint location
+    prefix,   // optional path prefix
+    endpoint, // actual endpoint
+    parent,   // parent route
+    method,   // rest method
+    branch    // branch configuration
   }) {
     /* ... */
   }
 }
 ```
+A route has the following properties:
+
+#### path
+The complete endpoint path.
+
+#### handler
+The endpoint's handler
+
+#### key
+The name of the folder containing the endpoint. 
+
+#### prefix
+The prefix to prepend to the path.
+
+#### endpoint
+The actual endpoint.
+
+#### parent
+The parent route object.
+
+#### method
+The rest method addressed (lowercase).
+
+#### filepath
+The endpoint file location.
 
 ## Adapter
+
 
 An adapter customizes the way a route is mounted on your server. It is defined as:
 
