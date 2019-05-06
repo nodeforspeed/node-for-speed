@@ -1,20 +1,24 @@
 const Router = require('.')
 const express = require('express')
-const $router = Symbol('router')
 
 class ExpressRouter extends Router {
-  constructor (server) {
-    super()
+  constructor (server, branch) {
+    super(server, branch)
 
-    const router = this[ $router ] = express.Router()
-    server.use(router)
+    const router = this.router = express.Router()
+    this.init(server, router, branch)
+  }
+
+  init (server, router, branch = {}) {
+    const { prefix = '' } = branch
+    server.use(prefix, router)
   }
 
   handler (route) {
-    const router = this[ $router ]
-    const { prefix, path, method, handler } = route
+    const { router } = this
+    const { path, method, handler } = route
 
-    router[ method ](`${ prefix }/${ path }`, handler)
+    router[ method ](path, handler)
   }
 }
 
