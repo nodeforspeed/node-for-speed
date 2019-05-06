@@ -193,12 +193,36 @@ module.exports = {
 # Customization
 
 ## Loader
+A loader defines how a route is mounted your server (or router) and delegates the task an adapter if provider.
+
+```javascript
+module.exports = (server, route, adapter, router) => {
+  /* ... */
+}
+```
 
 ## Router
+The `Router` class allows you to define:
+
+- how a router is built based on you configuration
+- how a router is attached to your server
+- how a route is mounted
+
+```javascript
+class Router {
+  constructor (server, branch) {
+    /* ... */
+  }
+
+  handler (route) {
+    /* ... */
+  }
+}
+```
 
 ## Route
 
-The purpose of the route class is to build your endpoints path and allow you to extend them as shown in [example](#customization-example). 
+The purpose of the `Route` class is to build your endpoints path and allow you to extend them as shown in [example](#customization-example). 
 
 ```javascript
 class Route {
