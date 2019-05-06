@@ -268,7 +268,6 @@ The endpoint file location.
 
 ## Adapter
 
-
 An adapter customizes the way a route is mounted on your server. It is defined as:
 
 ```javascript
@@ -325,19 +324,230 @@ module.exports = class CustomAdapter extends Adapter {
 
 ## Example
 
+In this example, we will customize node-for-speed to attach middlewares to our endpoints given the following project structure:
 
+```
+project/
+├── ...
+├── custom/
+├── middlewares/
+├── routes/
+│   ├── admin/
+│   │   └── ...
+│   ├── private/
+│   │   └── ...
+│   └── public/
+│       └── ...
+├── ...
+├── index.js
+├── package.json
+├── routes.js
+└── ...
+```
+
+### Endpoint
+
+Endpoints will be written under the form:
+
+```javascript
+const middleware = require('path/to/middleware')
+
+module.exports = {
+  use: middleware,
+  // OR
+  use: [ middleware ],
+  handler: (request, response) => {
+    /* ... */
+  }
+}
+```
+
+### Route 
+
+There is no need to extend the Route class in this example. <br /><br />
+But if, for instance, we wanted to define the middlewares by name rather than by actually attaching them to our endpoints, we would write:
+
+```javascript
+const Route = require('node-for-speed/route')
+
+class MiddlewareRoute extends Route {
+  constructor (options) {
+    super(options)
+
+    const { endpoint } = options
+    const { use } = endpoint
+    const middlewares = Array.isArray(use) ? use : [ use ]
+
+    this.use = middlewares.map(this.getMiddleware)
+  }
+
+  getMiddleware (name) {
+    /* ... */
+  }
+}
+
+module.exports = MiddlewareRoute
+```
+
+Our endpoints would then become:
+
+```javascript
+module.exports = {
+  use: 'middleware',
+  // OR
+  use: [ 'middleware' ],
+  handler: (request, response) => {
+    /* ... */
+  }
+}
+```
+
+### Router
+
+As we want apply prefix and middlewares at a branch level, we will have the following Router:
+
+```javascript
+const ExpressRouter = require('node-for-speed/router/express')
+
+class MiddlewareRouter extends ExpressRouter {
+  init (server, router, branch = {}) {
+    const {
+      prefix = '',
+      use
+    } = branch
+
+    if (use instanceof Function || use instanceof Array) {
+      server.use(prefix, use, router)
+    }
+    else {
+      server.use(prefix, router)
+    }
+  }
+
+  handler (route) {
+    const { router } = this
+    const { path, method, handler, parent, endpoint } = route
+    const middlewares = []
+
+    // get index middlewares
+    const indexwares = this.getMiddlewares(parent.endpoint)
+    // get the method middlewares
+    const methodwares = this.getMiddlewares(endpoint)
+
+    if (indexwares.length) {
+      middlewares.push(...indexwares)
+    }
+
+    if (methodwares.length) {
+      middlewares.push(...methodwares)
+    }
+
+    if (middlewares.length) {
+      router[ method ](path, middlewares, handler)
+    }
+    else {
+      router[ method ](path, handler)
+    }
+  }
+
+  getMiddlewares ({ use } = {}) {
+    const middlewares = []
+    if (use instanceof Function) {
+      middlewares.push(use)
+    }
+    else if (use instanceof Array) {
+      middlewares.push(...use)
+    }
+
+    return middlewares
+  }
+}
+
+module.exports = MiddlewareRouter
+```
+In the scenario exposed in the [Route](#customization-example-route) section, we would passed `route` and `parent` to `getMiddlewares` rather than the endpoints.
+
+### Adapter
+Let's add error handlers to our server:
+
+```javascript
+module.exports = {
+  after: server => {
+    // 404 handler
+
+    server.use((request, response, next) => {
+      response.status(404).send('Page not found')
+    })
+
+    // error handler
+
+    server.use((err, request, response, next) => {
+      /* ... */
+      response.status(500).send('Something went wrong...')
+    })
+  }
+}
+``` 
+### Configuration
+#### package.json
+```javascript
+{
+  // ...
+  "node-for-speed": { config: "./routes.js" }
+  // ...
+}
+```
+We load the configuration through a module to import middlewares.
+#### routes.js
+```javascript
+const isAuthenticated = require('./middlewares/authenticated')
+const isAdmin = require('./middlewares/admin')
+
+module.exports = {
+  adapter: './customs/adapter',
+  router: './customs/router',
+  paths: [
+    {
+      path: './public'
+    },
+    {
+      path: './private',
+      use: isAuthenticated
+    },
+    {
+      path: './admin',
+      prefix: '/admin',
+      use: [ isAuthenticated, isAdmin ]
+    }
+  ]
+}
+```
+#### index.js
+```javascript
+const express = require('express')
+const nfs = require('node-for-speed')
+const app = express()
+
+/* ... */
+
+nfs(app).then(() => app.listen(3000))
+
+/* ... */
+```
 
 Roadmap
 =======
 
 In progress
 -----------
-- Route documentation
-- Customization example
+- code sample
+- openapi path parameters
 - swagger generated API documentation
 
 Planned
 -------
+- static endpoints (e.g. routes/404.html)
+- document custom endpoint filenames
 - Built-in loaders: koa, hapi
 - rest file
 
