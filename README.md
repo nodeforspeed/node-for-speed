@@ -68,7 +68,8 @@ All paths passed to the config are relative to your project working directory.
 Built in server loader, path to your loader or loader module name.
 <br />
 <br />
-Available loaders: `express`
+Available loaders: `express` <br />
+Default: `express`
 
 #### `router` (String)
 
@@ -76,11 +77,12 @@ Built in router, path to your router or router module name. See [Router](#custom
 <br />
 <br />
 Available routers: `express` <br />
+Default: `null`
 
 #### `paths` (String | Object | Array)
 
-Paths to directories containing your endpoints as a String, a branch object (cf. example) or an Array containing any of the two. <br />
-Every String will be converted into branch.
+Paths to directories containing your endpoints as a string, a branch object (cf. example) or an array containing any of the two. <br />
+Every string will be converted into branch.
 
 ```javascript
 // branch
