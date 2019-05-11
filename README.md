@@ -3,6 +3,7 @@
 
 Getting started
 ---------------
+> `npm install node-for-speed`
 
 ```javascript
 const express = require('express')
@@ -117,6 +118,7 @@ The configuration can be auto-loaded from a module on startup using a config pro
 ```
 
 Then:
+
 ```javascript
 module.exports = {
   /* your config in js */
@@ -301,9 +303,11 @@ options = Object.assign({}, defaults, config)
 Given the optional nature of `before` and `after`, adapters can be expressed under any of the following forms:
 
 ```javascript
+// as a function
 module.exports = (server, route, router) => { /* ... */ }
 ```
 ```javascript
+// as an object
 module.exports = {
   before: (server, options) => { // optional
     /* ... */
@@ -317,6 +321,7 @@ module.exports = {
 }
 ```
 ```javascript
+// as a class extending Adapter
 module.exports = class CustomAdapter extends Adapter {
   /* ... */
 }
@@ -371,10 +376,10 @@ But if, for instance, we wanted to define the middlewares by name rather than by
 const Route = require('node-for-speed/route')
 
 class MiddlewareRoute extends Route {
-  constructor (options) {
-    super(options)
+  constructor (args) {
+    super(args)
 
-    const { endpoint } = options
+    const { endpoint } = args
     const { use } = endpoint
     const middlewares = Array.isArray(use) ? use : [ use ]
 
