@@ -108,7 +108,7 @@ If provided, the `"node-for-speed"` property of your package.json file will be a
 
 ### as module
 
-The configuration can be auto-loaded from a module on startup using a config property in either the two previous cases:
+The configuration can be auto-loaded from a module on startup using a config property in either of the two previous cases:
 
 ```javascript
 {
@@ -193,7 +193,7 @@ module.exports = {
 # Customization
 
 ## Loader
-A loader defines how a route is mounted your server (or router) and delegates the task an adapter if provider.
+A loader defines how a route is mounted on your server (or router) and delegates the task an adapter if provider.
 
 ```javascript
 module.exports = (server, route, adapter, router) => {
@@ -204,7 +204,7 @@ module.exports = (server, route, adapter, router) => {
 ## Router
 The `Router` class allows you to define:
 
-- how a router is built based on you configuration
+- how a router is built based on your configuration
 - how a router is attached to your server
 - how a route is mounted
 
@@ -222,7 +222,7 @@ class Router {
 
 ## Route
 
-The purpose of the `Route` class is to build your endpoints path and allow you to extend them as shown in [example](#customization-example). 
+The purpose of the `Route` class is to build your endpoints' path and allow you to extend them as shown in [example](#customization-example). 
 
 ```javascript
 class Route {
@@ -246,7 +246,7 @@ A route has the following properties:
 The complete endpoint path.
 
 #### handler
-The endpoint's handler
+The endpoint's handler.
 
 #### key
 The name of the folder containing the endpoint. 
@@ -465,7 +465,7 @@ class MiddlewareRouter extends ExpressRouter {
 
 module.exports = MiddlewareRouter
 ```
-In the scenario exposed in the [Route](#customization-example-route) section, we would passed `route` and `parent` to `getMiddlewares` rather than the endpoints.
+In the scenario exposed in the [Route](#customization-example-route) section, we would have passed `route` and `parent` to `getMiddlewares` rather than the endpoints.
 
 ### Adapter
 Let's add error handlers to our server:
@@ -504,8 +504,8 @@ const isAuthenticated = require('./middlewares/authenticated')
 const isAdmin = require('./middlewares/admin')
 
 module.exports = {
-  adapter: './customs/adapter',
-  router: './customs/router',
+  adapter: './custom/adapter',
+  router: './custom/router',
   paths: [
     {
       path: './public'
