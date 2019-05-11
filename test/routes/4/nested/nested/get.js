@@ -1,6 +1,12 @@
 module.exports = {
   url: '5/stars',
-  handler: (request, response) => {
-    response.send('ok')
-  }
+  handler: [
+    (request, response, next) => {
+      request.value = 'ok'
+      next()
+    },
+    ({ value }, response) => {
+      response.send(value)
+    }
+  ]
 }

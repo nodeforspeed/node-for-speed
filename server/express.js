@@ -10,6 +10,10 @@ module.exports = (server, route, adapter, router) => {
   }
   else {
     const { prefix, path, method, handler } = route
-    server[ method ](`${ prefix }/${ path }`, handler)
+    const url = `${ prefix }/${ path }`
+
+    Array.isArray(handler)
+      ? server[ method ](url, ...handler)
+      : server[ method ](url, handler)
   }
 }

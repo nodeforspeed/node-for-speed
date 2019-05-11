@@ -38,8 +38,8 @@ class Route {
 
       const handler  = endpoint.handler || endpoint
 
-      if (!(handler instanceof Function)) {
-        throw new Error(`Node For Speed: no handler function found for endpoint at ${ filepath }`)
+      if (!(handler instanceof Function) && !Array.isArray(handler)) {
+        throw new Error(`Node For Speed: invalid endpoint handler in ${ filepath }`)
       }
 
       this.handler = handler

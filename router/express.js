@@ -18,7 +18,9 @@ class ExpressRouter extends Router {
     const { router } = this
     const { path, method, handler } = route
 
-    router[ method ](path, handler)
+    Array.isArray(handler)
+      ? router[ method ](path, ...handler)
+      : router[ method ](path, handler)
   }
 }
 
