@@ -136,6 +136,13 @@ module.exports = {
   handler: (request, response) => {
     /* ... */
   }
+  // OR
+  handler: [
+    ...middlewares,
+    (request, response) => {
+      /* ... */
+    }
+  ]
 }
 
 // with path
