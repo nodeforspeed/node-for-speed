@@ -264,6 +264,7 @@ class NodeForSpeed {
           path: currentPath,
           parent: root,
           Route,
+          router,
           branch
         })
       }
