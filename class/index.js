@@ -65,21 +65,38 @@ class NodeForSpeed {
       let branch
       let router
 
-      if (!(entry instanceof Object)) {
-        src = entry
-        prefix = ''
-        branch = { path: entry }
-      }
-      else {
-        ({ path: src, prefix = '' } = entry)
+      if (entry instanceof Object) {
+        ({ path: src } = entry)
         branch = entry
       }
+      else {
+        src = entry
+        branch = { path: entry }
+      }
+
+      const path = Path.join(main, src)
+
+      try {
+        const index = require(path)
+        if (index instanceof Function) {
+          branch = Object.assign({ handler: index }, branch)
+        }
+        else if (index instanceof Object) {
+          branch = Object.assign({}, index, branch)
+        }
+        else if (typeof index === 'string') {
+          branch = { prefix: index }
+        }
+      }
+      catch (e) {
+        // no branch module
+      }
+
+      ({ prefix = '' } = branch)
 
       if (Router) {
         router = new Router(server, branch)
       }
-
-      const path = Path.join(main, src)
 
       return this[ $collect ]({
         adapter,

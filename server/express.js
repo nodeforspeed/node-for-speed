@@ -9,11 +9,25 @@ module.exports = (server, route, adapter, router) => {
     router.handler(route)
   }
   else {
-    const { prefix, path, method, handler } = route
+    const { prefix, path, method, handler, branch } = route
     const url = `${ prefix }/${ path }`
+    const handlers = []
 
-    Array.isArray(handler)
-      ? server[ method ](url, ...handler)
-      : server[ method ](url, handler)
+    if (branch) {
+      push(handlers, branch.handler)
+    }
+
+    push(handlers, handler)
+
+    server[ method ](url, ...handlers)
+  }
+}
+
+function push (handlers, handler) {
+  if (Array.isArray(handler)) {
+    handlers.push(...handler)
+  }
+  else if (handler instanceof Function) {
+    handlers.push(handler)
   }
 }

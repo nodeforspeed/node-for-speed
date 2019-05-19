@@ -7,7 +7,9 @@ class Route {
     endpoint,
     parent,
     prefix,
-    method
+    method,
+    adapter,
+    branch
   }) {
     prefix = prefix.replace(TAIL, '')
     prefix = prefix[ 0 ] === '/'
@@ -69,6 +71,8 @@ class Route {
     this.method = method
     this.filepath = filepath
     this.path = path
+    this.adapter = adapter
+    this.branch = branch
   }
 }
 

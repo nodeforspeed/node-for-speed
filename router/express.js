@@ -10,8 +10,12 @@ class ExpressRouter extends Router {
   }
 
   init (server, router, branch = {}) {
-    const { prefix = '' } = branch
-    server.use(prefix, router)
+    const { prefix = '', handler } = branch
+    const hasMiddleware = (handler instanceof Function || Array.isArray(handler))
+
+    hasMiddleware
+      ? server.use(prefix, handler, router)
+      : server.use(prefix, router)
   }
 
   handler (route) {

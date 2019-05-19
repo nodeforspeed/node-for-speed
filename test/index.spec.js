@@ -106,6 +106,17 @@ describe('nfs(server)', () => {
       expect(routes).toHaveLength(2)
     })
 
+    it('loads branches as modules', async () => {
+      const app = express()
+
+      config({
+        paths: './test/branch'
+      })
+
+      const routes = await nfs(app)
+      expect(routes).toHaveLength(2)
+    })
+
     it('forwards server and route to the handler function an instanciated Adapter object if provided', async () => {
       const app = express()
       config({

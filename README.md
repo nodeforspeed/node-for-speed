@@ -553,6 +553,8 @@ Roadmap
 In progress
 -----------
 - code sample
+- document branch as a module
+- document branch handlers (middlewares)
 - openapi path parameters
 - swagger generated API documentation
 
