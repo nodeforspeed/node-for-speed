@@ -28,6 +28,10 @@ const routers = {
   express: '../router/express'
 }
 
+const interop = module => module.__esModule
+  ? module.default
+  : module
+
 class NodeForSpeed {
   static async load (server, opt = {}) {
     const options = Object.assign({}, defaults, opt)
@@ -77,7 +81,7 @@ class NodeForSpeed {
       const path = Path.join(main, src)
 
       try {
-        const index = require(path)
+        const index = interop(require(path))
         if (index instanceof Function) {
           branch = Object.assign({ handler: index }, branch)
         }
@@ -135,9 +139,11 @@ class NodeForSpeed {
       return loader
     }
 
-    const fn = (loader in loaders)
-      ? require(loaders[ loader ])
-      : require(loader)
+    const id = (loader in loaders)
+      ? loaders[ loader ]
+      : loader
+
+    const fn = interop(require(id))
 
     if (!(fn instanceof Function)) throw new Error('Node For Speed: loader module must be a function')
 
@@ -245,11 +251,11 @@ class NodeForSpeed {
     let routePath
 
     if (hasModule) {
-      index = require(moduleFilePath)
+      index = interop(require(moduleFilePath))
       routePath = moduleFilePath
     }
     else if (hasIndex) {
-      index = require(indexFilePath)
+      index = interop(require(indexFilePath))
       routePath = indexFilePath
     }
     else {
@@ -289,7 +295,7 @@ class NodeForSpeed {
       // TODO: matchers
       let matched
       const filename = item.replace(/\.js$/, '').toLowerCase()
-      const endpoint = require(currentPath)
+      const endpoint = interop(require(currentPath))
 
       if (keys.length) {
         await keys.map(key => {
@@ -371,7 +377,7 @@ class NodeForSpeed {
 
     if (config) {
       const advancedPath = Path.join(main, config)
-      settings = require(advancedPath)
+      settings = interop(require(advancedPath))
     }
 
     defaults = Object.assign({}, settings)
