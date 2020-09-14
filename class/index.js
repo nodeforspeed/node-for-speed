@@ -1,3 +1,4 @@
+let conf = ''
 let defaults = {}
 const main = process.cwd()
 const Path = require('path')
@@ -78,7 +79,7 @@ class NodeForSpeed {
         branch = { path: entry }
       }
 
-      const path = Path.join(main, src)
+      const path = Path.join(main, conf, src)
 
       try {
         const index = interop(require(path))
@@ -157,10 +158,10 @@ class NodeForSpeed {
       Class = arg
     }
     else if (arg[ 0 ] === '.') {
-      Class = require(Path.join(main, arg))
+      Class = interop(require(Path.join(main, conf, arg)))
     }
     else {
-      Class = require(arg)
+      Class = interop(require(arg))
     }
 
     if (!Class) return
@@ -185,10 +186,10 @@ class NodeForSpeed {
       Class = route
     }
     else if (route[ 0 ] === '.') {
-      Class = require(Path.join(main, route))
+      Class = interop(require(Path.join(main, conf, route)))
     }
     else {
-      Class = require(route)
+      Class = interop(require(route))
     }
 
     if (!(Class instanceof Function && Class.prototype instanceof Route)) {
@@ -204,13 +205,13 @@ class NodeForSpeed {
     let Class
 
     if (router in routers) {
-      Class = require(routers[ router ])
+      Class = interop(require(routers[ router ]))
     }
     else if (router[ 0 ] === '.') {
-      Class = require(Path.join(main, router))
+      Class = interop(require(Path.join(main, conf, router)))
     }
     else {
-      Class = require(router)
+      Class = interop(require(router))
     }
 
     if (!(Class instanceof Function && Class.prototype instanceof Router)) {
@@ -372,15 +373,25 @@ class NodeForSpeed {
 
   static config (settings) {
     if (!settings) return
+    let options
 
     const { config } = settings
 
     if (config) {
       const advancedPath = Path.join(main, config)
-      settings = interop(require(advancedPath))
+
+      options = {
+        ...interop(require(advancedPath)),
+        config
+      }
+
+      conf = Path.relative(main, Path.dirname(advancedPath))
+    }
+    else {
+      options = settings
     }
 
-    defaults = Object.assign({}, settings)
+    defaults = Object.assign({}, options)
   }
 
   static get defaults () {
