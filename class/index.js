@@ -389,6 +389,7 @@ class NodeForSpeed {
     }
     else {
       options = settings
+      conf = ''
     }
 
     defaults = Object.assign({}, options)
